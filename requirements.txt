@@ -1,0 +1,7 @@
+express
+path
+body-parser
+mysql2
+bcrypt
+express-session
+node
