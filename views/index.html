@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="penguin_icon.png" type="image/png" />
+  <title>Penguin Race</title>
+  <style>
+    * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            background: linear-gradient(to right, #004d40, #00796b);
+            color: white;
+            width: 100%;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+
+        nav a:hover {
+            background: #004d40;
+        }
+
+        nav .penguin-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white; /* optional: adds a border around the icon */
+        }
+
+        header {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        h1 .icon {
+            font-size: 3.2rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 850px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .balance-box {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        select, input[type="number"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 10px;
+            width: 150px;
+        }
+
+        .btn {
+            background: #00bfa5;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin: 10px 8px;
+        }
+
+        .btn:hover {
+            background: #00796b;
+        }
+
+        #tracks {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 30px;
+        }
+
+        .track {
+            position: relative;
+            height: 70px;
+            background: #f1f8e9;
+            border: 2px dashed #aed581;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .penguin {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            top: 5px;
+            left: 0;
+            transition: left 0.5s;
+        }
+
+        #winnerOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            color: #00ffcc;
+            font-size: 2.5rem;
+            font-weight: bold;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #paypal-button-container {
+            margin-top: 20px;
+        }
+
+        #depositControls,
+        #withdrawControls {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #depositAmount,
+        #withdrawAmount {
+            width: 100px;
+        }
+
+        #paypal-withdraw-button-container {
+            margin-left: 10px;
+        }
+
+        .history-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .history-btn:hover {
+            background: #45a049;
+        }
+  </style>
+</head>
+<body>
+
+   <nav>
+    <a href="/home">
+      <img src="penguin_icon.png" alt="Penguin Race Icon" class="penguin-icon">
+    </a>
+    <div class="nav-links">
+      <a href="/home">Home</a>
+      <a href="/index">Play</a>
+      <a href="/profile">Profile</a>
+      <a href="/bet_history">Bet History</a>
+      <a href="/login">Logout</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1><span class="icon">🐧</span> Penguin Race</h1>
+    <p class="welcome">Welcome!</p>
+  </header>
+
+  <div class="card">
+    <div class="balance-box">Balance: $<span id="balance">0.00</span></div>
+
+    <div>
+      <label>Pick a penguin:</label>
+      <select id="penguinSelect">
+        <option value="">-- Select --</option>
+        <option value="p1">Penguin 1</option>
+        <option value="p2">Penguin 2</option>
+        <option value="p3">Penguin 3</option>
+        <option value="p4">Penguin 4</option>
+        <option value="p5">Penguin 5</option>
+      </select>
+
+      <label>Bet amount:</label>
+      <input type="number" id="betAmount" placeholder="$" min="1" />
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn" onclick="startRace()">Start Race</button>
+      <button class="btn" onclick="showDepositOptions()">Deposit</button>
+      <button class="btn" onclick="showWithdrawOptions()">Withdraw</button>
+
+      <div id="depositControls" style="display: none;">
+        <label>Deposit Amount:</label>
+        <input type="number" id="depositAmount" placeholder="$" min="1" />
+        <div id="paypal-button-container"></div>
+        <button class="btn" onclick="hideDepositOptions()">Cancel Deposit</button>
+      </div>
+
+      <div id="withdrawControls" style="display: none;">
+        <label>Withdraw Amount:</label>
+        <input type="number" id="withdrawAmount" placeholder="$" min="5" max="100000" />
+        <div id="paypal-withdraw-button-container"></div>
+        <button class="btn" onclick="hideWithdrawOptions()">Cancel Withdraw</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tracks"></div>
+  <div id="winnerOverlay"></div>
+
+  <script src="https://www.paypal.com/sdk/js?client-id=AawfTgwLiuGJIGVbhU2BNFY0KmSQB2P1qyvL-pz7F76CJNPbMFmIuSOSUg1CadEU9j89o8d31wNhjtnG&currency=USD"></script>
+  <script>
+    const penguinCount = 5;
+    const balanceDisplay = document.getElementById("balance");
+    const overlay = document.getElementById("winnerOverlay");
+    const depositControls = document.getElementById("depositControls");
+    const depositAmountInput = document.getElementById("depositAmount");
+    const paypalContainer = document.getElementById("paypal-button-container");
+    const withdrawControls = document.getElementById("withdrawControls");
+    const withdrawAmountInput = document.getElementById("withdrawAmount");
+    const paypalWithdrawContainer = document.getElementById("paypal-withdraw-button-container");
+    const trackContainer = document.getElementById("tracks");
+    const finishLine = window.innerWidth - 120;
+
+    // Load balance from localStorage
+    let balance = parseFloat(localStorage.getItem("penguin_balance")) || 0;
+
+    function updateBalanceDisplay() {
+      balanceDisplay.textContent = balance.toFixed(2);
+    }
+
+    function syncBalance() {
+      localStorage.setItem("penguin_balance", balance.toFixed(2));
+      console.log("Synced to localStorage: $" + balance.toFixed(2));
+    }
+
+    function createTracks() {
+      trackContainer.innerHTML = '';
+      for (let i = 1; i <= penguinCount; i++) {
+        const track = document.createElement("div");
+        track.className = "track";
+        track.innerHTML = `<img class="penguin" id="p${i}" src="https://media.tenor.com/MePwgJvo5QMAAAAj/penguin-running.gif">`;
+        trackContainer.appendChild(track);
+      }
+    }
+
+    function startRace() {
+      const chosenPenguin = document.getElementById("penguinSelect").value;
+      const betAmount = parseFloat(document.getElementById("betAmount").value);
+
+      if (!chosenPenguin || isNaN(betAmount) || betAmount <= 0) {
+        alert("Please choose a penguin and enter a valid bet amount.");
+        return;
+      }
+
+      if (balance < betAmount) {
+        alert("Insufficient balance!");
+        return;
+      }
+
+      overlay.style.display = "none";
+      overlay.innerHTML = "";
+
+      createTracks();
+
+      const racers = [];
+      for (let i = 1; i <= penguinCount; i++) {
+        racers.push({ id: `p${i}`, position: 0 });
+        document.getElementById(`p${i}`).style.left = "0px";
+      }
+
+      let raceInterval = setInterval(() => {
+        let winner = null;
+        for (let r of racers) {
+          let move = Math.random() * 6;
+          r.position += move;
+          document.getElementById(r.id).style.left = r.position + "px";
+          if (r.position >= finishLine && !winner) {
+            winner = r.id;
+            clearInterval(raceInterval);
+            showWinner(winner, chosenPenguin, betAmount);
+            break;
+          }
+        }
+      }, 14);
+    }
+
+    function showWinner(winnerId, chosenPenguin, betAmount) {
+  overlay.style.display = "flex";
+  overlay.innerHTML = `<div id="winner-message">${winnerId.toUpperCase()} wins!</div>`;
+
+  let outcomeText;
+  let profitOrLoss = 0;
+
+  if (winnerId === chosenPenguin) {
+    const winnings = betAmount * 2;
+    balance += winnings;
+    outcomeText = `🎉 You won $${winnings.toFixed(2)}!`;
+    profitOrLoss = winnings;
+  } else {
+    balance -= betAmount;
+    outcomeText = `😢 You lost $${betAmount.toFixed(2)}.`;
+    profitOrLoss = -betAmount;
+  }
+
+  overlay.innerHTML += `<div style='margin-top: 20px;'>${outcomeText}</div>`;
+
+  // Save to bet history
+  const betHistory = JSON.parse(localStorage.getItem("penguin_bet_history") || "[]");
+  const newEntry = {
+    timestamp: new Date().toLocaleString(),
+    chosenPenguin: chosenPenguin.toUpperCase(),
+    winner: winnerId.toUpperCase(),
+    amount: betAmount.toFixed(2),
+    outcome: profitOrLoss.toFixed(2)
+  };
+  betHistory.push(newEntry);
+  localStorage.setItem("penguin_bet_history", JSON.stringify(betHistory));
+
+  updateBalanceDisplay();
+  syncBalance();
+
+  overlay.addEventListener("click", function () {
+    overlay.style.display = "none";
+    overlay.innerHTML = "";
+  });
+
+  const messageArea = document.getElementById("winner-message");
+  if (messageArea) {
+    messageArea.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+  }
+}
+
+    function showDepositOptions() {
+      depositControls.style.display = "flex";
+      paypalContainer.innerHTML = "";
+      paypal.Buttons({
+        style: { layout: "horizontal" },
+        createOrder: (data, actions) => {
+          const depositAmount = parseFloat(depositAmountInput.value);
+          if (isNaN(depositAmount) || depositAmount < 1) {
+            alert("Please enter a valid deposit amount.");
+            return null;
+          }
+          return actions.order.create({
+            purchase_units: [{ amount: { value: depositAmount.toFixed(2) } }]
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(details => {
+            const depositedAmount = parseFloat(details.purchase_units[0].amount.value);
+            balance += depositedAmount;
+            updateBalanceDisplay();
+            syncBalance();
+            alert(`Deposit of $${depositedAmount.toFixed(2)} successful!`);
+            hideDepositOptions();
+          });
+        },
+        onError: (err) => {
+          console.error("PayPal error:", err);
+          alert("An error occurred during the deposit.");
+        }
+      }).render("#paypal-button-container");
+    }
+
+    function hideDepositOptions() {
+      depositControls.style.display = "none";
+      paypalContainer.innerHTML = "";
+      depositAmountInput.value = "";
+    }
+
+    function showWithdrawOptions() {
+      withdrawControls.style.display = "flex";
+      paypalWithdrawContainer.innerHTML = "";
+      paypal.Buttons({
+        style: { layout: "horizontal" },
+        createOrder: (data, actions) => {
+          const withdrawAmount = parseFloat(withdrawAmountInput.value);
+          if (isNaN(withdrawAmount) || withdrawAmount < 5 || withdrawAmount > 100000) {
+            alert("Please enter a valid withdrawal amount between $5 and $100,000.");
+            return null;
+          }
+          if (withdrawAmount > balance) {
+            alert("Insufficient balance for withdrawal.");
+            return null;
+          }
+          return actions.order.create({
+            purchase_units: [{ amount: { value: withdrawAmount.toFixed(2) } }]
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(details => {
+            const withdrawnAmount = parseFloat(details.purchase_units[0].amount.value);
+            balance -= withdrawnAmount;
+            updateBalanceDisplay();
+            syncBalance();
+            alert(`Withdrawal of $${withdrawnAmount.toFixed(2)} successful!`);
+            hideWithdrawOptions();
+          });
+        },
+        onError: (err) => {
+          console.error("PayPal error:", err);
+          alert("An error occurred during the withdrawal.");
+        }
+      }).render("#paypal-withdraw-button-container");
+    }
+
+    function hideWithdrawOptions() {
+      withdrawControls.style.display = "none";
+      paypalWithdrawContainer.innerHTML = "";
+      withdrawAmountInput.value = "";
+    }
+
+    createTracks();
+    updateBalanceDisplay();
+  </script>
+</body>
+</html>

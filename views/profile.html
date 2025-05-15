@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Profile - Penguin Race</title>
+    <link rel="icon" href="penguin_icon.png" type="image/png">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 60px;
+        }
+
+        nav {
+            background: linear-gradient(to right, #004d40, #00796b);
+            color: white;
+            width: 100%;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+
+        nav a:hover {
+            background: #004d40;
+        }
+
+        nav .penguin-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        header {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 850px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 10px;
+            width: 200px;
+        }
+
+        .btn {
+            background: #00bfa5;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #00796b;
+        }
+
+        .btn.delete {
+            background: #d32f2f;
+        }
+
+        .btn.delete:hover {
+            background: #b71c1c;
+        }
+
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+
+        .success {
+            color: green;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/home">
+            <img src="penguin_icon.png" alt="Penguin Race Icon" class="penguin-icon">
+        </a>
+        <div class="nav-links">
+            <a href="/home">Home</a>
+            <a href="/index">Play</a>
+            <a href="/profile">Profile</a>
+            <a href="/bet_history">Bet History</a>
+            <a href="/login">Logout</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Edit Profile</h1>
+    </header>
+
+    <div class="card">
+        <form id="profile-form">
+            <div>
+                <label for="username">New Username:</label>
+                <input type="text" name="username" id="username" required />
+            </div>
+
+            <div>
+                <label for="password">New Password (Leave blank if not changing):</label>
+                <input type="password" name="password" id="password" />
+            </div>
+
+            <button type="submit" class="btn">Update Profile</button>
+            <button type="button" id="delete-btn" class="btn delete">Delete Account</button>
+        </form>
+
+        <div id="message" class="error" style="display: none;"></div>
+        <div id="success-message" class="success" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('profile-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const messageDiv = document.getElementById('message');
+            const successDiv = document.getElementById('success-message');
+
+            if (username === "") {
+                messageDiv.textContent = "Username cannot be empty!";
+                messageDiv.style.display = "block";
+                successDiv.style.display = "none";
+                return;
+            }
+
+            try {
+                const response = await fetch('/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newUsername: username, newPassword: password })
+                });
+
+                const result = await response.text();
+
+                if (response.ok) {
+                    successDiv.textContent = result;
+                    successDiv.style.display = "block";
+                    messageDiv.style.display = "none";
+
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    messageDiv.textContent = result;
+                    messageDiv.style.display = "block";
+                    successDiv.style.display = "none";
+                }
+
+            } catch (err) {
+                messageDiv.textContent = "An error occurred.";
+                messageDiv.style.display = "block";
+                successDiv.style.display = "none";
+            }
+        });
+
+        document.getElementById('delete-btn').addEventListener('click', async () => {
+            if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                const response = await fetch('/delete-account', {
+                    method: 'POST'
+                });
+
+                const result = await response.text();
+                alert(result);
+                window.location.href = '/login';
+            }
+        });
+    </script>
+</body>
+</html>

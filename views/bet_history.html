@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bet History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            background: linear-gradient(to right, #004d40, #00796b);
+            color: white;
+            width: 100%;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+
+        nav a:hover {
+            background: #004d40;
+        }
+
+        nav .penguin-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .container {
+            margin-top: 100px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 850px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #00796b;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f0f0f0;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .back-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 20px;
+            display: inline-block;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #388e3c;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/home">
+            <img src="penguin_icon.png" alt="Penguin Race Icon" class="penguin-icon">
+        </a>
+        <div class="nav-links">
+            <a href="/home">Home</a>
+            <a href="/index">Play</a>
+            <a href="/profile">Profile</a>
+            <a href="/bet_history">Bet History</a>
+            <a href="/login">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+      <h1>Bet History</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date & Time</th>
+        <th>Your Pick</th>
+        <th>Winner</th>
+        <th>Bet Amount ($)</th>
+        <th>Outcome ($)</th>
+      </tr>
+    </thead>
+    <tbody id="historyTable">
+      <!-- Bet entries will be injected here -->
+    </tbody>
+  </table>
+
+  <a href="/index" class="back-btn">⬅ Back to Race</a>
+
+  <script>
+    const historyTable = document.getElementById("historyTable");
+    const historyData = JSON.parse(localStorage.getItem("penguin_bet_history") || "[]");
+
+    if (historyData.length === 0) {
+      historyTable.innerHTML = "<tr><td colspan='5'>No bet history found.</td></tr>";
+    } else {
+      historyData.reverse().forEach(entry => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${entry.timestamp}</td>
+          <td>${entry.chosenPenguin}</td>
+          <td>${entry.winner}</td>
+          <td>$${entry.amount}</td>
+          <td style="color: ${entry.outcome >= 0 ? 'green' : 'red'};">
+            ${entry.outcome >= 0 ? '+' : ''}$${entry.outcome}
+          </td>
+        `;
+
+        historyTable.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
